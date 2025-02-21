@@ -5,11 +5,11 @@ from selenium.webdriver.common.keys import Keys
 import time
 
 # بيانات الحساب من المتغيرات البيئية في Render
-email = os.getenv('EMAIL')  # سيتم تحديد البريد الإلكتروني من متغير بيئي في Render
-password = os.getenv('PASSWORD')  # سيتم تحديد كلمة المرور من متغير بيئي في Render
+email = os.getenv('EMAIL', '123456789xdf3@gmail.com')  # البريد الإلكتروني
+password = os.getenv('PASSWORD', 'Gehrman3mk')  # كلمة المرور
 
-# رابط التطبيق الذي تريد إرسال التعليقات عليه (هنا يجب أن تضع رابط السيرفر في المتغير البيئي "APP_URL")
-app_url = os.getenv('APP_URL')  # رابط التطبيق الذي سيتم تحديده من متغير بيئي في Render
+# رابط التطبيق الذي تريد إرسال التعليقات عليه (هنا رابط التطبيق الذي سيتم تحديده من المتغير البيئي "APP_URL")
+app_url = os.getenv('APP_URL', 'https://app.sanime.net')  # رابط التطبيق الذي سيتم تحديده من متغير بيئي في Render
 
 # التعليق الذي سيتم إرساله
 comment = "رأيي في التطبيق رائع! أستخدمه كل يوم."
@@ -19,15 +19,15 @@ comments_per_minute = 30
 delay_between_comments = 60 / comments_per_minute  # حساب التأخير بين التعليقات
 
 # إعداد WebDriver (ChromeDriver)
-driver = webdriver.Chrome(executable_path='/path/to/chromedriver')  # تأكد من تحديد مسار ChromeDriver الصحيح
+driver = webdriver.Chrome(executable_path='/path/to/chromedriver')  # تأكد من تحديد المسار الصحيح لـ ChromeDriver
 
 # فتح التطبيق
 driver.get(app_url)
 
-# تسجيل الدخول
-driver.find_element(By.ID, "email_input").send_keys(email)  # تحقق من معرّف العنصر المناسب للبريد الإلكتروني
-driver.find_element(By.ID, "password_input").send_keys(password)  # تحقق من معرّف العنصر المناسب لكلمة المرور
-driver.find_element(By.ID, "login_button").click()  # تحقق من معرّف الزر الخاص بتسجيل الدخول
+# تسجيل الدخول إلى التطبيق
+driver.find_element(By.ID, "email_input").send_keys(email)  # تأكد من معرّف العنصر المناسب للبريد الإلكتروني
+driver.find_element(By.ID, "password_input").send_keys(password)  # تأكد من معرّف العنصر المناسب لكلمة المرور
+driver.find_element(By.ID, "login_button").click()  # تأكد من معرّف الزر الخاص بتسجيل الدخول
 
 time.sleep(5)  # انتظر حتى يتم تحميل الصفحة الرئيسية بعد تسجيل الدخول
 
