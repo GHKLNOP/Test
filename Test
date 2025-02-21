@@ -1,7 +1,53 @@
-echo "# Test" >> README.md
-git init
-git add README.md
-git commit -m "first commit"
-git branch -M main
-git remote add origin https://github.com/GHKLNOP/Test.git
-git push -u origin main
+import os
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+import time
+
+# بيانات الحساب من المتغيرات البيئية في Render
+email = os.getenv('EMAIL')  # سيتم تحديد البريد الإلكتروني من متغير بيئي في Render
+password = os.getenv('PASSWORD')  # سيتم تحديد كلمة المرور من متغير بيئي في Render
+
+# رابط التطبيق الذي تريد إرسال التعليقات عليه (هنا يجب أن تضع رابط السيرفر في المتغير البيئي "APP_URL")
+app_url = os.getenv('APP_URL')  # رابط التطبيق الذي سيتم تحديده من متغير بيئي في Render
+
+# التعليق الذي سيتم إرساله
+comment = "رأيي في التطبيق رائع! أستخدمه كل يوم."
+
+# عدد التعليقات التي تريد إرسالها في الدقيقة
+comments_per_minute = 30
+delay_between_comments = 60 / comments_per_minute  # حساب التأخير بين التعليقات
+
+# إعداد WebDriver (ChromeDriver)
+driver = webdriver.Chrome(executable_path='/path/to/chromedriver')  # تأكد من تحديد مسار ChromeDriver الصحيح
+
+# فتح التطبيق
+driver.get(app_url)
+
+# تسجيل الدخول
+driver.find_element(By.ID, "email_input").send_keys(email)  # تحقق من معرّف العنصر المناسب للبريد الإلكتروني
+driver.find_element(By.ID, "password_input").send_keys(password)  # تحقق من معرّف العنصر المناسب لكلمة المرور
+driver.find_element(By.ID, "login_button").click()  # تحقق من معرّف الزر الخاص بتسجيل الدخول
+
+time.sleep(5)  # انتظر حتى يتم تحميل الصفحة الرئيسية بعد تسجيل الدخول
+
+# الحصول على كل الأفلام في الصفحة (افتراضياً نتوقع أنهم في عناصر <div> أو <article> معينة)
+anime_elements = driver.find_elements(By.CLASS_NAME, "anime-item")  # تحقق من أن هذه هي الطبقة الصحيحة التي تحتوي على كل فيلم
+
+# إرسال التعليقات لكل فيلم
+for anime in anime_elements:
+    try:
+        # العثور على خانة التعليق الخاصة بكل فيلم
+        comment_input = anime.find_element(By.CLASS_NAME, "comment_input")  # تحقق من أن هذه هي الطبقة الصحيحة لخانة التعليق
+        comment_input.send_keys(comment)
+        comment_input.send_keys(Keys.RETURN)
+        print(f"تم إرسال التعليق إلى الفيلم: {anime.text}")
+        
+        # تأخير بين التعليقات
+        time.sleep(delay_between_comments)
+    
+    except Exception as e:
+        print(f"فشل إرسال التعليق للفيلم: {anime.text}. الخطأ: {e}")
+
+# إغلاق المتصفح
+driver.quit()
